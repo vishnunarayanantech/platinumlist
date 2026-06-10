@@ -104,6 +104,20 @@ class EventService {
                 $sanitized['tags'] = array_map( 'sanitize_text_field', $data['tags'] );
             }
         }
+        if ( isset( $data['sections'] ) && is_array( $data['sections'] ) ) {
+            $sanitized['sections'] = [];
+            foreach ( $data['sections'] as $section ) {
+                $title   = sanitize_text_field( $section['title'] ?? '' );
+                $content = wp_kses_post( $section['content'] ?? '' );
+                if ( empty( $title ) && empty( $content ) ) {
+                    continue;
+                }
+                $sanitized['sections'][] = [
+                    'title'   => $title,
+                    'content' => $content,
+                ];
+            }
+        }
 
         return $sanitized;
     }

@@ -21,10 +21,11 @@ class Event {
     public ?string $updated_at = null;
 
     // Associated Entities (loaded dynamically or via service/repository)
-    public array $gallery = []; // Array of attachment IDs or structures
-    public array $faqs = [];    // Array of Faq entities
+    public array $gallery = [];   // Array of attachment IDs
+    public array $faqs = [];      // Array of Faq entities
     public array $organizers = []; // Array of Organizer entities
-    public array $tags = [];       // Array of tag names or objects
+    public array $tags = [];       // Array of tag name strings
+    public array $sections = [];   // Array of Section entities
 
     public function __construct( array $data = [] ) {
         if ( ! empty( $data ) ) {
@@ -65,6 +66,11 @@ class Event {
         }
         if ( isset( $data['tags'] ) && is_array( $data['tags'] ) ) {
             $this->tags = $data['tags'];
+        }
+        if ( isset( $data['sections'] ) && is_array( $data['sections'] ) ) {
+            $this->sections = array_map( function( $section ) {
+                return $section instanceof Section ? $section : new Section( (array) $section );
+            }, $data['sections'] );
         }
     }
 

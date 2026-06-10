@@ -65,6 +65,41 @@ if ( ! defined( 'ABSPATH' ) ) {
                     </div>
                 </div>
 
+                <!-- Content Sections Repeater -->
+                <div class="emp-card">
+                    <h2><?php esc_html_e( 'Content Sections', 'event-management-platform' ); ?></h2>
+                    <p style="color:var(--emp-text-muted); margin-top:0;"><?php esc_html_e( 'Add extra content blocks, each with a title and description.', 'event-management-platform' ); ?></p>
+
+                    <div id="emp-sections-repeater-container">
+                        <?php
+                        if ( $event && ! empty( $event->sections ) ) {
+                            foreach ( $event->sections as $index => $section ) {
+                                ?>
+                                <div class="emp-section-repeater-item" style="border:1px solid var(--emp-border); border-radius:8px; padding:16px; margin-bottom:12px; background:rgba(0,0,0,0.1);">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                                        <strong style="color:var(--emp-text);"><?php echo esc_html__( 'Section', 'event-management-platform' ) . ' ' . ( $index + 1 ); ?></strong>
+                                        <button type="button" class="emp-section-remove emp-btn emp-btn-danger" style="padding:4px 10px; font-size:12px;"><?php esc_html_e( 'Remove', 'event-management-platform' ); ?></button>
+                                    </div>
+                                    <div class="emp-form-group">
+                                        <label><?php esc_html_e( 'Section Title', 'event-management-platform' ); ?></label>
+                                        <input type="text" name="sections[<?php echo $index; ?>][title]" value="<?php echo esc_attr( $section->title ); ?>" class="emp-form-control" placeholder="<?php esc_attr_e( 'e.g. About the Artist', 'event-management-platform' ); ?>" />
+                                    </div>
+                                    <div class="emp-form-group">
+                                        <label><?php esc_html_e( 'Section Description', 'event-management-platform' ); ?></label>
+                                        <textarea name="sections[<?php echo $index; ?>][content]" class="emp-form-control" rows="5"><?php echo esc_textarea( $section->content ); ?></textarea>
+                                    </div>
+                                </div>
+                                <?php
+                            }
+                        }
+                        ?>
+                    </div>
+
+                    <button type="button" id="emp-add-section" class="emp-btn emp-btn-secondary" style="margin-top:10px;">
+                        <?php esc_html_e( '+ Add Section', 'event-management-platform' ); ?>
+                    </button>
+                </div>
+
                 <!-- Media Gallery -->
                 <div class="emp-card">
                     <h2><?php esc_html_e( 'Image Gallery', 'event-management-platform' ); ?></h2>

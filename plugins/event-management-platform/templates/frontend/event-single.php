@@ -55,6 +55,24 @@ get_header();
                     </div>
                 </div>
 
+                <!-- Content Sections -->
+                <?php if ( ! empty( $event->sections ) ) : ?>
+                    <?php foreach ( $event->sections as $section ) : ?>
+                        <div class="emp-rich-content">
+                            <?php if ( ! empty( $section->title ) ) : ?>
+                                <h3 style="color:#fff; font-size:20px; font-weight:700; margin-top:0; margin-bottom:15px;">
+                                    <?php echo esc_html( $section->title ); ?>
+                                </h3>
+                            <?php endif; ?>
+                            <?php if ( ! empty( $section->content ) ) : ?>
+                                <div style="color: var(--emp-fe-text); font-size: 15px; margin-bottom: 24px;">
+                                    <?php echo wp_kses_post( do_shortcode( wpautop( $section->content ) ) ); ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
                 <!-- Gallery -->
                 <?php if ( ! empty( $event->gallery ) ) : ?>
                     <div class="emp-rich-content">

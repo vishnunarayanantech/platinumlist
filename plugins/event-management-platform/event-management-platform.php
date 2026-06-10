@@ -3,7 +3,7 @@
  * Plugin Name:       Event Management Platform
  * Plugin URI:        https://github.com/emp/event-management-platform
  * Description:       An enterprise-level, SaaS-grade Event Management Platform for WordPress, designed to scale to thousands of events.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Author:            Antigravity
  * Author URI:        https://github.com/emp
  * License:           GPL-2.0-or-later
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define Constants.
-define( 'EMP_VERSION', '1.0.0' );
+define( 'EMP_VERSION', '1.1.0' );
 define( 'EMP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'EMP_URL', plugin_dir_url( __FILE__ ) );
 

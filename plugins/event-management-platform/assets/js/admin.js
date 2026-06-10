@@ -123,11 +123,45 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.emp-faq-remove', function(e) {
         e.preventDefault();
         $(this).closest('.emp-faq-repeater-item').remove();
-        
+
         // Re-index FAQ names
         $('.emp-faq-repeater-item').each(function(index) {
             $(this).find('input[name*="[question]"]').attr('name', 'faqs[' + index + '][question]');
             $(this).find('textarea[name*="[answer]"]').attr('name', 'faqs[' + index + '][answer]');
+        });
+    });
+
+    // 5. Content Sections Repeater
+    $(document).on('click', '#emp-add-section', function(e) {
+        e.preventDefault();
+        var index = $('.emp-section-repeater-item').length;
+        var html =
+            '<div class="emp-section-repeater-item" style="border:1px solid #444;border-radius:8px;padding:16px;margin-bottom:12px;background:#1e1e2e;">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+                    '<strong>Section ' + (index + 1) + '</strong>' +
+                    '<button type="button" class="emp-section-remove emp-btn emp-btn-danger" style="padding:4px 10px;font-size:12px;">Remove</button>' +
+                '</div>' +
+                '<div class="emp-form-group">' +
+                    '<label>Section Title</label>' +
+                    '<input type="text" name="sections[' + index + '][title]" class="emp-form-control" placeholder="e.g. About the Artist" />' +
+                '</div>' +
+                '<div class="emp-form-group">' +
+                    '<label>Section Description</label>' +
+                    '<textarea name="sections[' + index + '][content]" class="emp-form-control" rows="5" placeholder="Enter section content here..."></textarea>' +
+                '</div>' +
+            '</div>';
+        $('#emp-sections-repeater-container').append(html);
+    });
+
+    $(document).on('click', '.emp-section-remove', function(e) {
+        e.preventDefault();
+        $(this).closest('.emp-section-repeater-item').remove();
+
+        // Re-index names and heading numbers after removal
+        $('.emp-section-repeater-item').each(function(index) {
+            $(this).find('input[name*="[title]"]').attr('name', 'sections[' + index + '][title]');
+            $(this).find('textarea[name*="[content]"]').attr('name', 'sections[' + index + '][content]');
+            $(this).find('strong').text('Section ' + (index + 1));
         });
     });
 });

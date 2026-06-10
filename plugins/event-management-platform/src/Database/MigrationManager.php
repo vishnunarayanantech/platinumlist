@@ -7,7 +7,7 @@ namespace EventManagementPlatform\Database;
  */
 class MigrationManager {
     const DB_VERSION_OPTION = 'emp_db_version';
-    const CURRENT_VERSION    = '1.0.0';
+    const CURRENT_VERSION    = '1.1.0';
 
     /**
      * Run all migrations
@@ -142,6 +142,19 @@ class MigrationManager {
             KEY organizer_idx (organizer_id)
         ) $charset_collate;";
 
+        // 10. Event Sections Table
+        $table_event_sections = $wpdb->prefix . 'emp_event_sections';
+        $sql_event_sections = "CREATE TABLE $table_event_sections (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            event_id bigint(20) unsigned NOT NULL,
+            title varchar(255) NOT NULL DEFAULT '',
+            content longtext NOT NULL,
+            sort_order int(11) NOT NULL DEFAULT 0,
+            PRIMARY KEY  (id),
+            KEY event_idx (event_id),
+            KEY sort_order_idx (sort_order)
+        ) $charset_collate;";
+
         // Execute migrations with dbDelta
         dbDelta( $sql_venues );
         dbDelta( $sql_categories );
@@ -152,6 +165,7 @@ class MigrationManager {
         dbDelta( $sql_event_tag_map );
         dbDelta( $sql_organizers );
         dbDelta( $sql_event_organizer_map );
+        dbDelta( $sql_event_sections );
 
         // Update database version option
         update_option( self::DB_VERSION_OPTION, self::CURRENT_VERSION );

@@ -5,6 +5,7 @@ namespace EventManagementPlatform\Repositories;
 use EventManagementPlatform\Entities\Event;
 use EventManagementPlatform\Entities\Faq;
 use EventManagementPlatform\Entities\Organizer;
+use EventManagementPlatform\Entities\Section;
 
 class EventRepository implements RepositoryInterface {
     private string $table_name;
@@ -33,6 +34,7 @@ class EventRepository implements RepositoryInterface {
         $this->syncFaqs( $event_id, $data['faqs'] ?? [] );
         $this->syncOrganizers( $event_id, $data['organizer_ids'] ?? [] );
         $this->syncTags( $event_id, $data['tags'] ?? [] );
+        $this->syncSections( $event_id, $data['sections'] ?? [] );
 
         return $event_id;
     }
@@ -69,6 +71,9 @@ class EventRepository implements RepositoryInterface {
         if ( isset( $data['tags'] ) ) {
             $this->syncTags( $id, $data['tags'] );
         }
+        if ( isset( $data['sections'] ) ) {
+            $this->syncSections( $id, $data['sections'] );
+        }
 
         return true;
     }
@@ -81,6 +86,7 @@ class EventRepository implements RepositoryInterface {
         $wpdb->delete( $wpdb->prefix . 'emp_event_faqs', [ 'event_id' => $id ], [ '%d' ] );
         $wpdb->delete( $wpdb->prefix . 'emp_event_organizer_map', [ 'event_id' => $id ], [ '%d' ] );
         $wpdb->delete( $wpdb->prefix . 'emp_event_tag_map', [ 'event_id' => $id ], [ '%d' ] );
+        $wpdb->delete( $wpdb->prefix . 'emp_event_sections', [ 'event_id' => $id ], [ '%d' ] );
 
         $result = $wpdb->delete( $this->table_name, [ 'id' => $id ], [ '%d' ] );
         return $result !== false;
@@ -219,12 +225,19 @@ class EventRepository implements RepositoryInterface {
 
         // 4. Load Tags
         $tag_rows = $wpdb->get_results( $wpdb->prepare(
-            "SELECT t.name FROM {$wpdb->prefix}emp_event_tags t 
-             INNER JOIN {$wpdb->prefix}emp_event_tag_map m ON t.id = m.tag_id 
+            "SELECT t.name FROM {$wpdb->prefix}emp_event_tags t
+             INNER JOIN {$wpdb->prefix}emp_event_tag_map m ON t.id = m.tag_id
              WHERE m.event_id = %d",
             $event->id
         ), ARRAY_A );
         $event->tags = array_map( fn($r) => $r['name'], $tag_rows );
+
+        // 5. Load Sections
+        $section_rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}emp_event_sections WHERE event_id = %d ORDER BY sort_order ASC",
+            $event->id
+        ), ARRAY_A );
+        $event->sections = array_map( fn($r) => new Section( $r ), $section_rows );
     }
 
     /**
@@ -316,6 +329,31 @@ class EventRepository implements RepositoryInterface {
             $wpdb->insert( $map_table, [
                 'event_id' => $event_id,
                 'tag_id'   => (int) $tag_id
+            ] );
+        }
+    }
+
+    /**
+     * Sync event content sections
+     */
+    private function syncSections( int $event_id, array $sections ): void {
+        global $wpdb;
+        $table = $wpdb->prefix . 'emp_event_sections';
+        $wpdb->delete( $table, [ 'event_id' => $event_id ], [ '%d' ] );
+
+        foreach ( $sections as $order => $section_data ) {
+            $title   = sanitize_text_field( $section_data['title'] ?? '' );
+            $content = wp_kses_post( $section_data['content'] ?? '' );
+
+            if ( empty( $title ) && empty( $content ) ) {
+                continue;
+            }
+
+            $wpdb->insert( $table, [
+                'event_id'   => $event_id,
+                'title'      => $title,
+                'content'    => $content,
+                'sort_order' => (int) $order,
             ] );
         }
     }

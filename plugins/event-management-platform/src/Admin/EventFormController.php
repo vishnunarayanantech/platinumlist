@@ -118,6 +118,21 @@ class EventFormController {
         $organizer_ids = isset( $_POST['organizer_ids'] ) && is_array( $_POST['organizer_ids'] ) ? array_map( 'intval', $_POST['organizer_ids'] ) : [];
         $tags = isset( $_POST['tags'] ) ? sanitize_text_field( $_POST['tags'] ) : '';
 
+        $sections = [];
+        if ( isset( $_POST['sections'] ) && is_array( $_POST['sections'] ) ) {
+            foreach ( $_POST['sections'] as $section ) {
+                $title   = sanitize_text_field( $section['title'] ?? '' );
+                $content = wp_kses_post( $section['content'] ?? '' );
+                if ( empty( $title ) && empty( $content ) ) {
+                    continue;
+                }
+                $sections[] = [
+                    'title'   => $title,
+                    'content' => $content,
+                ];
+            }
+        }
+
         return [
             'title'             => sanitize_text_field( $_POST['title'] ?? '' ),
             'slug'              => sanitize_title( $_POST['slug'] ?? '' ),
@@ -136,6 +151,7 @@ class EventFormController {
             'faqs'              => $faqs,
             'organizer_ids'     => $organizer_ids,
             'tags'              => $tags,
+            'sections'          => $sections,
         ];
     }
 }
